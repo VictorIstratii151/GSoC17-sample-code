@@ -2,6 +2,10 @@ import BinarySearch
 import Numerics
 import math
 
+GAUSS =  0
+LORENTZ = 1
+VOIGT = 2
+
 def calcLine(energyArray, ecenter, lineParams, lineflux, crtLevel, lineShape, qspeedy, fluxArray):
 	ecenterArray = list(ecenter)
 	lineParamsArray = list(lineParams)
@@ -51,6 +55,14 @@ def calcManyLines(energyArray, ecenterArray, lineParamsArray, linefluxArray, crt
 			ielow = icen
 			alow = 0.0
 			#################################
+
+def lineFraction(lineShape, energy, ecenter, lineParams, qspeedy):
+	first = True
+	saveEcenter = 0
+	saveWidth = 0
+	lnorm = 0
+
+
 
 
 def gaussFraction(deltasigma, qspeedy):
