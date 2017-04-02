@@ -136,6 +136,42 @@ def lorentzFraction(deltasigma, qspeedy):
 		return 2 * math.atan(2 * x)
 
 
+def voigtFraction(energy, ecenter, sigma, gamma, qspeedy):
+
+	# Function to return the integral of a Voigt(ecenter,sigma,gamma) distribution 
+	# from -energy to +energy.
+	# If qspeedy=true interpolates on a previously calculated grid of calculations
+	# while if qspeedy=false then does calculation each time.
+
+	# for now use a pseudo-Voigt approximation (good to 1%) which is just a sum of a 
+	# Gaussian and a Lorentzian. Reference is Ida, T, Ando, M and Toraya, H (2000), 
+	# "Extended pseudo-Voigt function for approximating the Voigt profile",
+	# Journal of Applied Crystallography 33 (6): 1311–1316.
+
+	gaussValue = 0
+	lorentzValue = 0
+	if sigma > 0.0:
+		gaussValue = gaussFraction(math.fabs(energy - ecenter) / sigma, qspeedy)
+	if gamma > 0.0:
+		lorentzValue = lorentzFraction(math.fabs(energy - ecenter) / gamma, qspeedy)
+
+	if sigma == 0.0:
+		return lorentzValue
+	if gamma == 0.0:
+		return gaussValue
+
+	# 2sqrt(2ln(2)) = 2.35482
+
+	fG = 2.35482 * sigma
+	fL = 2.0 * gamma
+
+	f = fG**5 + 2.69269*fG**4*fL + 2.42843*fG**3*fL*fL + .47163*fG*fG*fL**3 + 0.07842*fG*fL**4 + fL**5
+	f = f ** 0.2
+	
+	fLof = fL / f
+	eta = 1.36603*fLof - 0.47719*fLof*fLof + 0.11116*fLof*fLof*fLof
+
+	return eta * lorentzValue + (1.0 - eta) * gaussValue
 
 
 
