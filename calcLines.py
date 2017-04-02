@@ -1,4 +1,4 @@
-
+import BinarySearch
 
 def calcLine(energyArray, ecenter, lineParams, lineflux, crtLevel, lineShape, qspeedy, fluxArray):
 	ecenterArray = list(ecenter)
@@ -12,4 +12,6 @@ def calcManyLines(energyArray, ecenterArray, lineParamsArray, linefluxArray, crt
  	# the energy array then lineCenterBin will be set to -1. Otherwise
  	# energyArray[lineCenterBin] < ecenterArray <= energyArray[lineCenterBin+1]
 
- 	lineCenterBin = []
+ 	lineCenterBin = BinarySearch.Binarysearch(energyArray, ecenterArray)
+
+ 	
