@@ -54,7 +54,67 @@ def calcManyLines(energyArray, ecenterArray, lineParamsArray, linefluxArray, crt
 		if ecenter >= efirst:
 			ielow = icen
 			alow = 0.0
-			#################################
+			fractionInsideRange = lineFraction(lineShape, efirst, ecenter, lineParams, qspeedy) / 2
+			if ecenter > elast:
+				ielow = nE - 2
+				alow = lineFraction(lineShape, elast, ecenter, lineParams, qspeedy)
+				fractionInsideRange -= alow / 2 									
+
+			# Do the low energy part of the line
+			lineSum = 0.0
+			ahi = 0.0
+
+			while ielow >= 0:
+				ahi = lineFraction(lineShape, energyArray[ielow], ecenter, lineParams, qspeedy)
+				fract = (ahi - alow) / 2
+
+				fluxArray[ielow] += fract * lineflux;
+				lineSum += fract
+
+				if (fractionInsideRange - lineSum) < crtLevel:
+					# Too many sigma away so stop now and add the rest of the line into this
+					# bin. Not strictly correct but shouldn't matter and ensures that the total
+					# flux is preserved.
+					fluxArray[ielow] += (fractionInsideRange - lineSum) * lineflux
+					ielow = 0
+
+				alow = ahi
+				ielow -= 1
+
+		# If the line center is above the last bin then don't calculate 
+		# the upper part of the line. If line center is below first bin then 
+		# just calculate the part of the line within energy range.
+
+		if ecenter <= elast:
+			alow = 0.0
+			ielow = icen
+			fractionInsideRange = lineFraction(lineShape, elast, ecenter, lineParams, qspeedy) / 2
+
+			if ecenter <  efirst:
+				ielow = 0
+				alow = lineFraction(lineShape, energyArray[ielow], ecenter, lineParams, qspeedy)
+				fractionInsideRange -= alow / 2
+
+			# Do the high energy part of the line
+
+			lineSum = 0.0;
+			ahi = 0.0
+
+			while ielow < nE - 1:
+				ahi = lineFraction(lineShape, energyArray[ielow+1], ecenter, lineParams, qspeedy)
+				fract = (ahi - alow) / 2
+				fluxArray[ielow] += fract * lineflux
+				lineSum += fract
+
+				if (fractionInsideRange - lineSum) < crtLevel:
+					# Too many sigma away so stop now and add the rest of the Gaussian into this
+					# bin. Not strictly correct but shouldn't matter and ensures that the total
+					# flux is preserved.
+					fluxArray[ielow] += (fractionInsideRange - lineSum) * lineflux
+					ielow = nE
+				alow = ahi
+				ielow += 1
+
 
 def lineFraction(lineShape, energy, ecenter, lineParams, qspeedy):
 	first = True
@@ -77,8 +137,6 @@ def lineFraction(lineShape, energy, ecenter, lineParams, qspeedy):
 		return voigtFraction(energy, ecenter, lineParams[0], lineParams[1], qspeedy)
 	else:
 		return 0.0
-
-
 
 
 def gaussFraction(deltasigma, qspeedy):
