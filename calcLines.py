@@ -26,5 +26,18 @@ def calcManyLines(energyArray, ecenterArray, lineParamsArray, linefluxArray, crt
  		lineParams = lineParamsArray[iline]
  		lineflux = linefluxArray[iline]
 
- 		
 
+ 		# first do case of zero width line. assume for the moment that this occurs
+    	# if all the lineParams are zero
+		
+		deltaFunction = True
+
+		for i in range(0, len(lineParams)):
+			if lineParams[i] != 0:
+				deltaFunction = False
+				break
+
+			if deltaFunction == True:
+				if icen != -1:
+					fluxArray[icen] += lineflux
+					continue
