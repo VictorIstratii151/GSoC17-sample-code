@@ -14,4 +14,17 @@ def calcManyLines(energyArray, ecenterArray, lineParamsArray, linefluxArray, crt
 
  	lineCenterBin = BinarySearch.Binarysearch(energyArray, ecenterArray)
 
- 	
+ 	efirst = energyArray[0]
+ 	nE = len(energyArray)
+ 	elast = energyArray[nE - 1]
+
+ 	# Loop around the lines
+
+ 	for iline in range(0, len(ecenterArray)):
+ 		icen = lineCenterBin[iline]
+ 		ecenter = ecenterArray[iline]
+ 		lineParams = lineParamsArray[iline]
+ 		lineflux = linefluxArray[iline]
+
+ 		
+
