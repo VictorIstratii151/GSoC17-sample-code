@@ -72,7 +72,7 @@ def gaussFraction(deltasigma, qspeedy):
 	# will interpolate
 
 	if qspeedy and first:
-		for i in range(0, GaussMaxStep):
+		for i in range(0, GaussMaxStep + 1):
 			tabErf[i] = math.erf(i * GaussStep / Numerics.SQRT2)
 		first = False
 
@@ -81,7 +81,7 @@ def gaussFraction(deltasigma, qspeedy):
 
 	if qspeedy:
 		# Now interpolate from the table
-		index = x / GaussStep
+		index = x // GaussStep
 
 		# If we're past the edge of the tabulated data return 1.0
 		if index >= GaussMaxStep:
@@ -93,6 +93,50 @@ def gaussFraction(deltasigma, qspeedy):
 		return (1.0 - remainder) * tabErf[index] + remainder * tabErf[index + 1]
 	else:
 		return math.erf(x / Numerics.SQRT2)
+
+
+def lorentzFraction(deltasigma, qspeedy):
+
+	# Function to return the integral of a Lorentzian(0,1) distribution from 
+	# -deltasigma to +deltasigma. There is an additional normalization factor
+	# which depends on the line energy and width of 1/(pi/2 - arctan(-2*E0/W))
+	# and should be applied by the routine calling lorentzFraction.
+	# If qspeedy=true interpolates on a previously calculated grid of calculations
+	# while if qspeedy=false then does calculation each time.
+
+	LorentzMaxStep = 1200
+	LorentzMax = 6
+	LorentzStep = LorentzMax / LorentzMaxStep
+
+	tabLor = []
+	first = True
+
+	# if the first time through then calculate the grid on which we
+	# will interpolate
+
+	if qspeedy and first:
+		for i in range(0, LorentzMaxStep + 1):
+			tabLor[i] = 2 * math.atan(2 * i * LorentzStep)
+		first = False
+
+	# how many sigmas away we are
+	x = math.fabs(deltasigma)
+
+	if qspeedy:
+		index = x // LorentzStep
+
+		# If we're past the edge of the tabulated data return 1.0.
+		if index >= LorentzMaxStep:
+			return 1.0
+
+		remainder = (x - index * LorentzStep) * (1.0 / LorentzStep)
+
+		# Do the interpolation
+		return 2 * (1.0 - remainder) * tabLor[index] + remainder * tabLor[index + 1]
+	else:
+		return 2 * math.atan(2 * x)
+
+
 
 
 
