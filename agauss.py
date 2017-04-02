@@ -15,4 +15,7 @@ def agauss(energyArray, params, spectrumNumber, fluxArray, fluxErrArray, initStr
 	for i in range(0, nE):
 		angstromArray.append(KEV_TO_A / energyArray[nE - 1 - i])
 
+	lineParams = list(params[1])
+
+	angstromFluxArray = []
 	
