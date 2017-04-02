@@ -62,6 +62,22 @@ def lineFraction(lineShape, energy, ecenter, lineParams, qspeedy):
 	saveWidth = 0
 	lnorm = 0
 
+	if lineShape == GAUSS:
+		return gaussFraction(math.fabs(energy - ecenter) / lineParams[0], qspeedy)
+	elif lineShape == LORENTZ:
+		if first or ecenter != saveEcenter or saveWidth != lineParams[0]:
+			saveEcenter = ecenter;
+			saveWidth = lineParams[0];
+			lnorm = 1.0 / (math.pi / 2.0 - atan(-2.0 * ecenter / lineParams[0]))
+			first = False
+
+		lfrac = lorentzFraction(math.fabs(energy - ecenter) / lineParams[0], qspeedy)
+		return lfrac * lnorm
+	elif lineShape == VOIGT:
+		return voigtFraction(energy, ecenter, lineParams[0], lineParams[1], qspeedy)
+	else:
+		return 0.0
+
 
 
 
